@@ -23,6 +23,14 @@ interface SearchSpace {
     fun value(d: Int, i: Int): Any {
         return 0.00
     }
+
+    fun sampleAt(indices: IntArray): DoubleArray {
+        return doubleArrayOf(0.0)
+    }
+
+    fun valueAt(indices: IntArray): DoubleArray {
+        return doubleArrayOf(0.0)
+    }
 }
 
 

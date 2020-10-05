@@ -10,8 +10,8 @@ import kotlin.math.*
 
 fun main(args: Array<String>) {
     val f = when (args[0]) {
-        "Hartmann3" -> Hartmann3
-        "Hartmann6" -> Hartmann6
+//        "Hartmann3" -> Hartmann3
+//        "Hartmann6" -> Hartmann6
         "Branin" -> Branin
         "GoldsteinPrice" -> GoldsteinPrice
         else -> throw AssertionError("Invalid first argument for function " + args[0])
@@ -28,14 +28,29 @@ class FunctionReport(val f: NTBEAFunction) {
         // for each run we keep the final best sampled point...and its actual value under the function
         // We can then report the basic stats for imprecision and also actual value
 
-        val searchSpace = FunctionSearchSpace(searchDimensions.first, searchDimensions.second)
+        val searchSpaceType = args.find { it.startsWith("space") }?.split("=")?.get(1)?: "normal"
+        var searchSpace: SearchSpace
+
+        if(searchSpaceType == "gaussian") {
+            searchSpace = GaussianSearchSpace(
+                searchDimensions.first,
+                IntArray(searchDimensions.first*2) {searchDimensions.second},
+                doubleArrayOf(0.0, 0.0),
+                doubleArrayOf(1.0, 1.0),
+                doubleArrayOf(0.1, 0.1),
+                doubleArrayOf(0.2, 0.2)
+            )
+        } else {
+            searchSpace = FunctionSearchSpace(searchDimensions.first, searchDimensions.second)
+        }
         val kExplore = (args.find { it.startsWith("kExplore=") }?.split("=")?.get(1) ?: "100.0").toDouble()
         val minWeight = (args.find { it.startsWith("minWeight=") }?.split("=")?.get(1) ?: "0.0").toDouble()
         val weight = (args.find { it.startsWith("fitWeight=") }?.split("=")?.get(1) ?: "0.5").toDouble()
         val maxFeatures = (args.find { it.startsWith("maxF=") }?.split("=")?.get(1) ?: "0").toInt()
         val T = (args.find { it.startsWith("T=") }?.split("=")?.get(1) ?: "30").toInt()
-        val neighbourhood: Double = args.find { it.startsWith("hood=") }?.split("=")?.get(1)?.toDouble()
-                ?: min(50.0, searchDimensions.second.toDouble().pow(searchDimensions.first) * 0.01)
+        val neighbourhood = 50;
+//        val neighbourhood: Double = args.find { it.startsWith("hood=") }?.split("=")?.get(1)?.toDouble()
+//                ?: min(50.0, searchDimensions.second.toDouble().pow(searchDimensions.first) * 0.01)
         val fileName: String = args.find { it.startsWith("logFile=") }?.split("=")?.get(1) ?: ""
 
         val weightFunction: (Int) -> Double = when (type) {
@@ -79,11 +94,12 @@ class FunctionReport(val f: NTBEAFunction) {
             searchFramework.runTrial(evaluator, iterPerRun)
 
             val choice = landscapeModel.bestOfSampled.map { it.toInt() }.toIntArray()
-            val actualValue = max(0.0, f.functionValue(searchSpace.convertSettings(choice)))
+            val actualValue = f.functionValue(searchSpace.valueAt(choice))
             val predictedValue = landscapeModel.getMeanEstimate(landscapeModel.bestOfSampled)
 
-            fullRecord[choice.joinToString(",")] = fullRecord.getOrDefault(choice.joinToString(","), 0) + 1
-            actualValues[choice.joinToString(",")] = actualValue
+            val choiceVals = searchSpace.valueAt(choice)
+            fullRecord[choiceVals.joinToString(",")] = fullRecord.getOrDefault(choiceVals.joinToString(","), 0) + 1
+            actualValues[choiceVals.joinToString(",")] = actualValue
             GlobalStatsCollator.addStatistics("ActualValue", actualValue)
             GlobalStatsCollator.addStatistics("Delta", predictedValue - actualValue)
             val details = String.format("%.3g, %.3g, %.3g, %s\n", predictedValue, actualValue, predictedValue - actualValue,
@@ -100,6 +116,10 @@ class FunctionReport(val f: NTBEAFunction) {
         println("10 most popular choices : \n" + orderedByCount.joinToString("\n") {
             String.format("\t%s - %d\t%.3f", it.first, it.second, actualValues[it.first])
         })
+
+        val totalScore = orderedByCount.sumByDouble { actualValues[it.first]!! }
+
+        println(totalScore)
     }
 }
 

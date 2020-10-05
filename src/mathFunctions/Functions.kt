@@ -64,7 +64,7 @@ object Branin : NTBEAFunction {
         val d = 6.0
         val e = 10.0
         val f = 1.0 / 8.0 / PI
-        return (-(a * (x2 - b * x1 * x1 + c * x1 - d).pow(2) + e * (1.0 - f) * cos(x1) + e) + 10.0) / 12.0
+        return max(0.0,(-(a * (x2 - b * x1 * x1 + c * x1 - d).pow(2) + e * (1.0 - f) * cos(x1) + e) + 10.0) / 12.0)
     }
 }
 
@@ -74,7 +74,7 @@ object GoldsteinPrice : NTBEAFunction {
     override fun functionValue(x: DoubleArray): Double {
         val x1 = x[0] * 4.0 - 2.0
         val x2 = x[1] * 4.0 - 2.0
-        return (400.0 -(1.0 + (x1 + x2 + 1).pow(2) * (19.0 - 14 * x1 + 3 * x1.pow(2) - 14 * x2 + 6 * x1 * x2 + 3 * x2.pow(2))) *
-                (30.0 + (2 * x1 - 3 * x2).pow(2) * (18.0 - 32 * x1 + 12 * x1.pow(2) + 48 * x2 - 36 * x1 * x2 + 27 * x2.pow(2)))) / 500.0
+        return max(0.0, (400.0 -(1.0 + (x1 + x2 + 1).pow(2) * (19.0 - 14 * x1 + 3 * x1.pow(2) - 14 * x2 + 6 * x1 * x2 + 3 * x2.pow(2))) *
+                (30.0 + (2 * x1 - 3 * x2).pow(2) * (18.0 - 32 * x1 + 12 * x1.pow(2) + 48 * x2 - 36 * x1 * x2 + 27 * x2.pow(2)))) / 500.0)
     }
 }

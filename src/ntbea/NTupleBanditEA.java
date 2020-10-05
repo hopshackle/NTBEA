@@ -88,11 +88,13 @@ public class NTupleBanditEA implements EvoAlg {
 
         // banditLandscapeModel.printDetailedReport();
 
-        while (evaluator.nEvals() < nEvals) {
+
+
+        for(int i=0; i<nEvals; i++) {
 
             // each time around the loop we make one fitness evaluation of p
             // and add this NEW information to the memory
-            int prevEvals = evaluator.nEvals();
+            //int prevEvals = evaluator.nEvals();
 
             // the new version enables resampling
             double fitness;
@@ -109,7 +111,7 @@ public class NTupleBanditEA implements EvoAlg {
 
 //            System.out.println(String.format("Point evaluated is %s, fitness %.2f", pString, fitness));
 
-            if (reportFrequency > 0 && evaluator.nEvals() % reportFrequency == 0) {
+            if (i>0 && i % reportFrequency == 0) {
                 System.out.format("Iteration: %d\t %.1f\n", evaluator.nEvals(), fitness);
                 System.out.println(evaluator.logger().ss);
                 System.out.println();
@@ -141,14 +143,14 @@ public class NTupleBanditEA implements EvoAlg {
             p = evc.picker.getBest();
 //            logger.keepBest(picker.getBest(), picker.getBestScore());
 
-            int diffEvals = evaluator.nEvals() - prevEvals;
+            //int diffEvals = evaluator.nEvals() - prevEvals;
 
-            if (logBestYet) {
-                double[] bestYet = banditLandscapeModel.getBestOfSampled();
-                for (int i = 0; i < diffEvals; i++) {
-                    evaluator.logger().logBestYest(bestYet);
-                }
-            }
+//            if (logBestYet) {
+//                double[] bestYet = banditLandscapeModel.getBestOfSampled();
+//                for (int i = 0; i < diffEvals; i++) {
+//                    evaluator.logger().logBestYest(bestYet);
+//                }
+//            }
         }
 
         return banditLandscapeModel.getBestOfSampled();

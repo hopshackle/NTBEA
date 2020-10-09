@@ -1,6 +1,5 @@
 /.gradle/
 build/
-lib/
 
 # IntelliJ IDEA
 .idea/

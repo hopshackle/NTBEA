@@ -8,6 +8,7 @@ import kotlin.AssertionError
 import kotlin.math.*
 
 
+
 fun main(args: Array<String>) {
     if (args.size < 4 || args.contains("-h")) {
         println(
@@ -140,8 +141,9 @@ class FunctionReport(val f: NTBEAFunction) {
             val predictedValue = landscapeModel.getMeanEstimate(landscapeModel.bestOfSampled)
 
             val choiceVals = searchSpace.valueAt(choice)
-            fullRecord[choiceVals.joinToString(",")] = fullRecord.getOrDefault(choiceVals.joinToString(","), 0) + 1
-            actualValues[choiceVals.joinToString(",")] = actualValue
+            val key = choiceVals.joinToString(",") {String.format("%.3f", it)}
+            fullRecord[key] = fullRecord.getOrDefault(key , 0) + 1
+            actualValues[key] = actualValue
             GlobalStatsCollator.addStatistics("ActualValue", actualValue)
             GlobalStatsCollator.addStatistics("Delta", predictedValue - actualValue)
             val details =
@@ -162,9 +164,8 @@ class FunctionReport(val f: NTBEAFunction) {
             String.format("\t%s - %d\t%.3f", it.first, it.second, actualValues[it.first])
         })
 
-        val totalScore = orderedByCount.sumByDouble { actualValues[it.first]!! }
-
-        println(totalScore)
+//        val totalScore = orderedByCount.sumByDouble { actualValues[it.first]!! }
+//        println(totalScore)
     }
 }
 

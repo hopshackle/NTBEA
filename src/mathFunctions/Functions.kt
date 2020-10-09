@@ -8,7 +8,7 @@ interface NTBEAFunction {
     val dimension: Int
 }
 
-public val Hartmann3 = Hartmann(
+val Hartmann3 = Hartmann(
         a = arrayOf(
                 doubleArrayOf(3.0, 10.0, 30.0),
                 doubleArrayOf(0.1, 10.0, 35.0),
@@ -23,7 +23,7 @@ public val Hartmann3 = Hartmann(
         )
 )
 
-public val Hartmann6 = Hartmann(
+val Hartmann6 = Hartmann(
         a = arrayOf(
                 doubleArrayOf(10.0, 3.0, 17.0, 3.5, 1.7, 8.0),
                 doubleArrayOf(0.05, 10.0, 17.0, 0.1, 8.0, 14.0),

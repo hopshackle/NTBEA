@@ -8,7 +8,6 @@ import kotlin.AssertionError
 import kotlin.math.*
 
 
-
 fun main(args: Array<String>) {
     if (args.size < 4 || args.contains("-h")) {
         println(
@@ -61,10 +60,10 @@ class FunctionReport(val f: NTBEAFunction) {
             GaussianSearchSpace(
                 searchDimensions.first,
                 IntArray(searchDimensions.first * 2) { searchDimensions.second },
-                doubleArrayOf(0.0, 0.0),
-                doubleArrayOf(1.0, 1.0),
-                doubleArrayOf(0.1, 0.1),
-                doubleArrayOf(0.2, 0.2)
+                DoubleArray(searchDimensions.first) { 0.0 },
+                DoubleArray(searchDimensions.first) { 1.0 },
+                DoubleArray(searchDimensions.first) { 0.1 },
+                DoubleArray(searchDimensions.first) { 0.2 }
             )
         } else {
             FunctionSearchSpace(searchDimensions.first, searchDimensions.second)
@@ -141,8 +140,8 @@ class FunctionReport(val f: NTBEAFunction) {
             val predictedValue = landscapeModel.getMeanEstimate(landscapeModel.bestOfSampled)
 
             val choiceVals = searchSpace.valueAt(choice)
-            val key = choiceVals.joinToString(",") {String.format("%.3f", it)}
-            fullRecord[key] = fullRecord.getOrDefault(key , 0) + 1
+            val key = choiceVals.joinToString(",") { String.format("%.3f", it) }
+            fullRecord[key] = fullRecord.getOrDefault(key, 0) + 1
             actualValues[key] = actualValue
             GlobalStatsCollator.addStatistics("ActualValue", actualValue)
             GlobalStatsCollator.addStatistics("Delta", predictedValue - actualValue)

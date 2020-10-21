@@ -36,9 +36,14 @@ interface SearchSpace {
 
 abstract class AgentSearchSpace<T>(fileName: String) : SearchSpace {
 
-    val searchDimensions: List<String> = if (fileName != "") FileReader(fileName).readLines() else emptyList()
+    val searchDimensions: List<String> = setupSearchDimensions(fileName)
+    private fun setupSearchDimensions(fileName: String): List<String> {
+        val allDimensions = if (fileName != "") FileReader(fileName).readLines() else emptyList()
+        return allDimensions.filter { it.contains(",") }  // this filters out any dimension with only one entry
+    }
+
     val searchKeys: List<String> = searchDimensions.map { it.split("=").first() }
-    val searchTypes: List<KClass<*>> = searchKeys.map {
+    val searchTypes: List<Class<*>> = searchKeys.map {
         types[it] ?: throw AssertionError("Unknown search variable $it")
     }
     val searchValues: List<List<Any>> = searchDimensions.zip(searchTypes)
@@ -47,15 +52,17 @@ abstract class AgentSearchSpace<T>(fileName: String) : SearchSpace {
                 .split(",")
                 .map(String::trim).map {
                     when (cl) {
-                        Int::class -> it.toInt()
-                        Double::class -> it.toDouble()
-                        Boolean::class -> it.toBoolean()
-                        String::class -> it
-                        else -> throw AssertionError("Currently unsupported class $cl")
+                        Int::class, Int::class.javaObjectType, Int::class.javaPrimitiveType -> it.toInt()
+                        Double::class, Double::class.javaObjectType, Double::class.javaPrimitiveType -> it.toDouble()
+                        Boolean::class.java, Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType -> it.toBoolean()
+                        String::class.java, String::class.javaObjectType -> it
+                        else -> throw AssertionError("Currently unsupported class $cl.")
                     }
                 }
         }
-    abstract val types: Map<String, KClass<*>>
+
+    abstract val types: Map<String, Class<*>>
+
     fun convertSettings(settings: IntArray): DoubleArray {
         return settings.zip(searchValues).map { (i, values) ->
             val v = values[i]
@@ -72,10 +79,10 @@ abstract class AgentSearchSpace<T>(fileName: String) : SearchSpace {
     fun settingsToMap(settings: DoubleArray): Map<String, Any> {
         return settings.withIndex().map { (i, v) ->
             searchKeys[i] to when (searchTypes[i]) {
-                Int::class -> (v + 0.5).toInt()
-                Double::class -> v
-                Boolean::class -> v > 0.5
-                String::class -> searchValues[i][(v + 0.5).toInt()]
+                Int::class, Int::class.javaObjectType, Int::class.javaPrimitiveType -> (v + 0.5).toInt()
+                Double::class, Double::class.javaObjectType, Double::class.javaPrimitiveType -> v
+                Boolean::class.java, Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType -> v > 0.5
+                String::class.java, String::class.javaObjectType -> searchValues[i][(v + 0.5).toInt()]
                 else -> throw AssertionError("Unsupported class ${searchTypes[i]}")
             }
         }.toMap()

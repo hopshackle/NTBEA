@@ -41,12 +41,12 @@ class GaussianProcessSearch(val name: String, override var searchSpace: SearchSp
     private val extraDebug = false
     private val solutionsTried = ArrayList<DoubleArray>()
     override val bestOfSampled: DoubleArray
-        get() = solutionsTried.map { Pair(it, getMeanEstimate(it) - getExplorationEstimate(it)) }.maxBy { it.second }?.first
+        get() = solutionsTried.map { Pair(it, getMeanEstimate(it) - getExplorationEstimate(it)) }.maxByOrNull { it.second }?.first
                 ?: doubleArrayOf()
     // we subtract 1 sd from the mean to get a bounded result
 
     override val bestSolution: DoubleArray
-        get() = solutionsTried.map { Pair(it, getMeanEstimate(it)) }.maxBy { it.second }?.first ?: doubleArrayOf()
+        get() = solutionsTried.map { Pair(it, getMeanEstimate(it)) }.maxByOrNull { it.second }?.first ?: doubleArrayOf()
 
 
     override fun getMeanEstimate(x: DoubleArray): Double {
@@ -98,8 +98,8 @@ class GaussianProcessSearch(val name: String, override var searchSpace: SearchSp
             val options = searchSpace.nValues(k)
             if (searchSpace.value(k, 0) is Number) {
                 val allValues = (0 until options).map { (searchSpace.value(k, it) as Number).toDouble() }
-                val minValue = allValues.min() ?: 0.00
-                val maxValue = allValues.max() ?: 0.00
+                val minValue = allValues.minOrNull() ?: 0.00
+                val maxValue = allValues.maxOrNull() ?: 0.00
                 parameterConstraints.add(ParameterDetail(key, minValue, maxValue, allValues.all { abs(it.roundToInt() - it) < 0.0001 }))
             } else {
                 parameterConstraints.add(ParameterDetail(key, (0 until options).map {

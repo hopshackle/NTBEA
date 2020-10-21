@@ -85,12 +85,12 @@ class FunctionSearchSpace(val dimensions: Int, val valuesPerDimension: Int) : Se
         return ""
     }
 
-    override fun value(i: Int, j: Int): Double {
-        return j * increment
+    override fun value(d: Int, i: Int): Double {
+        return i * increment
     }
 
-    override fun sampleAt(settings: IntArray): DoubleArray {
-        return settings.withIndex().map { value(it.index, it.value) }.toDoubleArray()
+    override fun sampleAt(indices: IntArray): DoubleArray {
+        return indices.withIndex().map { value(it.index, it.value) }.toDoubleArray()
     }
 
     override fun valueAt(indices: IntArray): DoubleArray {
@@ -154,13 +154,13 @@ class GaussianSearchSpace(val dimensions: Int, val valuesPerDimension: IntArray,
         }
     }
 
-    override fun sampleAt(settings: IntArray): DoubleArray {
-        return sample(settings)
+    override fun sampleAt(indices: IntArray): DoubleArray {
+        return sample(indices)
     }
 
-    override fun valueAt(idx: IntArray): DoubleArray {
+    override fun valueAt(indices: IntArray): DoubleArray {
         return DoubleArray(dimensions) { d ->
-            muSig[d][idx[d]]
+            muSig[d][indices[d]]
         }
     }
 

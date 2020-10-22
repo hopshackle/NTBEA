@@ -33,14 +33,15 @@ interface SearchSpace {
     }
 }
 
+private fun setupSearchDimensions(fileName: String): List<String> {
+    val allDimensions = if (fileName != "") FileReader(fileName).readLines() else emptyList()
+    return allDimensions.filter { it.contains(",") }  // this filters out any dimension with only one entry
+}
 
-abstract class AgentSearchSpace<T>(fileName: String) : SearchSpace {
+abstract class AgentSearchSpace<T>(val searchDimensions: List<String>) : SearchSpace {
+    constructor(fileName: String) : this(setupSearchDimensions(fileName))
 
-    val searchDimensions: List<String> = setupSearchDimensions(fileName)
-    private fun setupSearchDimensions(fileName: String): List<String> {
-        val allDimensions = if (fileName != "") FileReader(fileName).readLines() else emptyList()
-        return allDimensions.filter { it.contains(",") }  // this filters out any dimension with only one entry
-    }
+    //  val searchDimensions: List<String> = setupSearchDimensions(fileName)
 
     val searchKeys: List<String> = searchDimensions.map { it.split("=").first() }
     val searchTypes: List<Class<*>> = searchKeys.map {

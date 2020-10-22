@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
                 T=                          For EXP/LIN/SQRT/INV, this is the temperature to use in the weight function. Default is 30.
                 T=                          For FIT/STDFIT this is instead the threshold number of visits before a Tuple is incorporated in the regression. Default is 30.
                 hood=                       The number of neighbouring points to test at each iteration of NTBEA before picking one to sample with the function.
-                logFile=                    A filename to write the results too (one line per NTBEA run).
+                logFile=                    A filename to write the results to (one line per NTBEA run).
             """.trimIndent()
         )
     }

@@ -1,9 +1,12 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.4.10'
+    id 'maven'
+    id 'signing'
 }
 
-group 'org.hopshackle'
-version '1.0'
+group = "com.github.hopshackle"
+archivesBaseName = "NTBEA"
+version = "0.1"
 
 repositories {
     mavenCentral()
@@ -38,4 +41,66 @@ task functionJar(type: Jar) {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     archiveFileName = "FunctionNTBEA.jar"
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: 'kSBPBZga', password: 'QdHr8uUfOMLynW1+Z5mC+CuoUe70icQYQsNLMKuQIjKs')
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: 'kSBPBZga', password: 'QdHr8uUfOMLynW1+Z5mC+CuoUe70icQYQsNLMKuQIjKs')
+            }
+
+            pom.project {
+                name 'NTBEA'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Parameter optimisation with the N-Tuple Bandit Evolutionary Algorithm'
+                url 'http://www.github.com/hopshackle/NTBEA'
+
+                scm {
+                    connection 'scm:git:git://github.com/hopshackle/NTBEA.git'
+                    developerConnection 'scm:git:git://github.com/hopshackle/NTBEA.git'
+                    url 'http://github.com/hopshackle/NTBEA'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'hopshackle'
+                        name 'James Goodman'
+                        email 'james@janigo.co.uk'
+                    }
+                }
+            }
+        }
+    }
 }

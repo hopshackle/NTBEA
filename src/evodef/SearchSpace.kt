@@ -38,8 +38,8 @@ private fun setupSearchDimensions(fileName: String): List<String> {
     return allDimensions.filter { it.contains(",") }  // this filters out any dimension with only one entry
 }
 
-abstract class AgentSearchSpace<T>(val searchDimensions: List<String>) : SearchSpace {
-    constructor(fileName: String) : this(setupSearchDimensions(fileName))
+abstract class AgentSearchSpace<T>(val searchDimensions: List<String>, val types: Map<String, Class<*>>) : SearchSpace {
+    constructor(fileName: String, types: Map<String, Class<*>>) : this(setupSearchDimensions(fileName), types)
 
     //  val searchDimensions: List<String> = setupSearchDimensions(fileName)
 
@@ -51,18 +51,19 @@ abstract class AgentSearchSpace<T>(val searchDimensions: List<String>) : SearchS
         .map { (allV, cl) ->
             allV.split("=")[1]      // get the stuff after the colon, which should be values to be searched
                 .split(",")
-                .map(String::trim).map {
+                .map(String::trim).map {str ->
                     when (cl) {
-                        Int::class, Int::class.javaObjectType, Int::class.javaPrimitiveType -> it.toInt()
-                        Double::class, Double::class.javaObjectType, Double::class.javaPrimitiveType -> it.toDouble()
-                        Boolean::class.java, Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType -> it.toBoolean()
-                        String::class.java, String::class.javaObjectType -> it
-                        else -> throw AssertionError("Currently unsupported class $cl.")
+                        Int::class, Int::class.javaObjectType, Int::class.javaPrimitiveType -> str.toInt()
+                        Double::class, Double::class.javaObjectType, Double::class.javaPrimitiveType -> str.toDouble()
+                        Boolean::class.java, Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType -> str.toBoolean()
+                        String::class.java, String::class.javaObjectType -> str
+                        else -> if (cl.isEnum) {
+                            cl.enumConstants.find { it.toString() == str } ?: throw AssertionError("Enum not found : " + str + " in " + cl.enumConstants.joinToString())
+                        } else
+                            throw AssertionError("Currently unsupported class $cl.")
                     }
                 }
         }
-
-    abstract val types: Map<String, Class<*>>
 
     fun convertSettings(settings: IntArray): DoubleArray {
         return settings.zip(searchValues).map { (i, values) ->
@@ -83,13 +84,12 @@ abstract class AgentSearchSpace<T>(val searchDimensions: List<String>) : SearchS
                 Int::class, Int::class.javaObjectType, Int::class.javaPrimitiveType -> (v + 0.5).toInt()
                 Double::class, Double::class.javaObjectType, Double::class.javaPrimitiveType -> v
                 Boolean::class.java, Boolean::class.javaObjectType, Boolean::class.javaPrimitiveType -> v > 0.5
-                String::class.java, String::class.javaObjectType -> searchValues[i][(v + 0.5).toInt()]
-                else -> throw AssertionError("Unsupported class ${searchTypes[i]}")
+                else ->  searchValues[i][(v + 0.5).toInt()]
             }
         }.toMap()
     }
 
-    abstract fun getAgent(settings: DoubleArray): T
+    abstract fun getAgent(settings: IntArray): T
     override fun nValues(i: Int) = searchValues[i].size
     override fun nDims() = searchValues.size
     override fun name(i: Int) = searchKeys[i]

@@ -8,8 +8,6 @@ class FunctionEvaluator(val f: NTBEAFunction, val searchSpace: SearchSpace) : So
 
     private val rnd = Random(System.currentTimeMillis())
 
-    override fun logger() = EvolutionLogger()
-
     var nEvals = 0
 
     override fun searchSpace() = searchSpace

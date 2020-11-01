@@ -37,12 +37,6 @@ public class NTupleBanditEA implements EvoAlg {
         this.nNeighbours = nNeighbours;
     }
 
-    int reportFrequency = 10000;
-    public NTupleBanditEA setReportFrequency(int reportFrequency) {
-        this.reportFrequency = reportFrequency;
-        return this;
-    }
-
     StatSummary fitness(SolutionEvaluator evaluator, int[] sol) {
         StatSummary ss = new StatSummary();
         for (int i = 0; i < nSamples; i++) {
@@ -109,15 +103,6 @@ public class NTupleBanditEA implements EvoAlg {
                 fitness = fitness(evaluator, p).mean();
             }
 
-//            System.out.println(String.format("Point evaluated is %s, fitness %.2f", pString, fitness));
-
-            if (i>0 && i % reportFrequency == 0) {
-                System.out.format("Iteration: %d\t %.1f\n", evaluator.nEvals(), fitness);
-                System.out.println(evaluator.logger().ss);
-                System.out.println();
-                // System.out.println(p.length);
-                // System.out.println(p);
-            }
 
             banditLandscapeModel.addPoint(p, fitness);
 

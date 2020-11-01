@@ -6,7 +6,7 @@ plugins {
 
 group = "com.github.hopshackle"
 archivesBaseName = "NTBEA"
-version = "0.2"
+version = "0.3-SNAPSHOT"
 
 repositories {
     mavenCentral()

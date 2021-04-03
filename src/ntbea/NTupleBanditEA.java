@@ -151,4 +151,10 @@ public class NTupleBanditEA implements EvoAlg {
     public LandscapeModel getModel() {
         return banditLandscapeModel;
     }
+
+    @NotNull
+    @Override
+    public double[] runTrial(MultiSolutionEvaluator evaluator, int nEvals) {
+        throw new IllegalArgumentException("Not implemented");
+    }
 }

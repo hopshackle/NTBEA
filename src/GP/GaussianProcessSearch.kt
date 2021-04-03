@@ -31,6 +31,10 @@ class GaussianProcessFramework(override val model: GaussianProcessSearch, val nS
         return model.bestOfSampled
     }
 
+    override fun runTrial(evaluator: MultiSolutionEvaluator, nEvals: Int): DoubleArray {
+        TODO("Not yet implemented")
+    }
+
 }
 
 class GaussianProcessSearch(val name: String, override var searchSpace: SearchSpace) : LandscapeModel {

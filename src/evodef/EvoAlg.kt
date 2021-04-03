@@ -13,5 +13,6 @@ import evodef.EvolutionLogger
 interface EvoAlg {
     // seed the algorithm with a specified point in the search space
     fun runTrial(evaluator: SolutionEvaluator, nEvals: Int): DoubleArray
+    fun runTrial(evaluator: MultiSolutionEvaluator, nEvals: Int): DoubleArray
     val model: LandscapeModel
 }

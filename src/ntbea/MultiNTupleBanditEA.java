@@ -80,6 +80,7 @@ public class MultiNTupleBanditEA extends NTupleBanditEA {
 
 
             // We then independently find the best neighbour from each of the points
+            List<int[]> newP = new ArrayList<>();
             for (int loop = 0; loop < playerCount; loop++) {
                 EvaluateChoices evc = new EvaluateChoices(banditLandscapeModel, kExplore);
                 int[] startingPoint = p.get(loop);
@@ -88,9 +89,9 @@ public class MultiNTupleBanditEA extends NTupleBanditEA {
                     evc.add(pp);
                 }
                 int[] best = evc.picker.getBest();
-                for (int k = 0; k < playerCount; k++)
-                    startingPoint[k] = best[k];
+                newP.add(best);
             }
+            p = newP;
 
         }
 

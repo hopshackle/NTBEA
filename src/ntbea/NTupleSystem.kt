@@ -29,7 +29,7 @@ open class NTupleSystem(override val searchSpace: SearchSpace) : BanditLandscape
 
     protected var epsilon = defaultEpsilon
 
-    private var sampledPoints: MutableSet<IntArray>
+    var sampledPoints: MutableSet<IntArray>
 
     var tuples: ArrayList<NTuple>
 
